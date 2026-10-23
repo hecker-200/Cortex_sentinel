@@ -1,0 +1,21 @@
+# One-click setup on Render (render.com → New → Blueprint → pick this repo).
+# Set DATABASE_URL to a Postgres connection string (e.g. a free Neon database) when prompted.
+services:
+  - type: web
+    name: cortex
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: EDUCATOR_SIGNUP_CODE
+        generateValue: true

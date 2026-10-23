@@ -1,0 +1,1012 @@
+[
+  {
+    "id": "LV-1a",
+    "pairId": "LV-1",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "normal",
+    "difficulty": 1,
+    "rationale": "The walls thicken and move inward briskly, and the cavity shrinks well over half from diastole to systole. That fits normal systolic function (EF around 60–65%).",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.63,
+      "effusion": 0,
+      "hr": 68,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "normal",
+        "confidence": 0.91,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "reduced",
+        "confidence": 0.71,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-1b",
+    "pairId": "LV-1",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "normal",
+    "difficulty": 1,
+    "rationale": "The walls thicken and move inward briskly, and the cavity shrinks well over half from diastole to systole. That fits normal systolic function (EF around 60–65%).",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.66,
+      "effusion": 0,
+      "hr": 74,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "normal",
+        "confidence": 0.88,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "reduced",
+        "confidence": 0.71,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-2a",
+    "pairId": "LV-2",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "normal",
+    "difficulty": 2,
+    "rationale": "Contraction is less vigorous than the clearest normal cases, but the cavity still empties by more than half. An EF in the mid-50s is within the normal range (≥ 50%).",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.54,
+      "effusion": 0,
+      "hr": 82,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "normal",
+        "confidence": 0.88,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "reduced",
+        "confidence": 0.68,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-2b",
+    "pairId": "LV-2",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "normal",
+    "difficulty": 2,
+    "rationale": "Contraction is less vigorous than the clearest normal cases, but the cavity still empties by more than half. An EF in the mid-50s is within the normal range (≥ 50%).",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.56,
+      "effusion": 0,
+      "hr": 78,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "normal",
+        "confidence": 0.86,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "reduced",
+        "confidence": 0.68,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-3a",
+    "pairId": "LV-3",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "reduced",
+    "difficulty": 1,
+    "rationale": "The walls move, but the cavity stays large at end-systole and shrinks by only about a third. That fits moderately reduced function (EF about 40%).",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.38,
+      "effusion": 0,
+      "hr": 88,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "reduced",
+        "confidence": 0.86,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "normal",
+        "confidence": 0.74,
+        "errorType": "wrong-grade"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-3b",
+    "pairId": "LV-3",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "reduced",
+    "difficulty": 1,
+    "rationale": "The walls move, but the cavity stays large at end-systole and shrinks by only about a third. That fits moderately reduced function (EF about 40%).",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.4,
+      "effusion": 0,
+      "hr": 84,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "reduced",
+        "confidence": 0.93,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "normal",
+        "confidence": 0.74,
+        "errorType": "wrong-grade"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-4a",
+    "pairId": "LV-4",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "reduced",
+    "difficulty": 3,
+    "rationale": "A borderline case. Motion looks almost normal at a glance, but the end-systolic cavity is still relatively large. EF in the mid-to-high 40s is mildly reduced.",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.46,
+      "effusion": 0,
+      "hr": 72,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "reduced",
+        "confidence": 0.93,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "normal",
+        "confidence": 0.82,
+        "errorType": "wrong-grade"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-4b",
+    "pairId": "LV-4",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "reduced",
+    "difficulty": 3,
+    "rationale": "A borderline case. Motion looks almost normal at a glance, but the end-systolic cavity is still relatively large. EF in the mid-to-high 40s is mildly reduced.",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.47,
+      "effusion": 0,
+      "hr": 76,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "reduced",
+        "confidence": 0.89,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "normal",
+        "confidence": 0.82,
+        "errorType": "wrong-grade"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-5a",
+    "pairId": "LV-5",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "severe",
+    "difficulty": 1,
+    "rationale": "The left ventricle is large and barely changes size through the cycle, with little wall thickening. That fits severely reduced function (EF about 20%).",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.18,
+      "effusion": 0,
+      "hr": 96,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "severe",
+        "confidence": 0.89,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "reduced",
+        "confidence": 0.66,
+        "errorType": "wrong-grade"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-5b",
+    "pairId": "LV-5",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "severe",
+    "difficulty": 1,
+    "rationale": "The left ventricle is large and barely changes size through the cycle, with little wall thickening. That fits severely reduced function (EF about 20%).",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.2,
+      "effusion": 0,
+      "hr": 92,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "severe",
+        "confidence": 0.9,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "reduced",
+        "confidence": 0.66,
+        "errorType": "wrong-grade"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-6a",
+    "pairId": "LV-6",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "severe",
+    "difficulty": 2,
+    "rationale": "There is some visible motion, which can look \"reduced but not severe\", but the cavity shrinks by only about a quarter. EF just under 30% is severely reduced.",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.27,
+      "effusion": 0,
+      "hr": 90,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "severe",
+        "confidence": 0.9,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "reduced",
+        "confidence": 0.77,
+        "errorType": "wrong-grade"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "LV-6b",
+    "pairId": "LV-6",
+    "domain": "lv",
+    "question": "How is left ventricular systolic function on this clip?",
+    "options": [
+      {
+        "value": "normal",
+        "label": "Normal (EF ≥ 50%)"
+      },
+      {
+        "value": "reduced",
+        "label": "Reduced (EF 30–49%)"
+      },
+      {
+        "value": "severe",
+        "label": "Severely reduced (EF < 30%)"
+      }
+    ],
+    "answer": "severe",
+    "difficulty": 2,
+    "rationale": "There is some visible motion, which can look \"reduced but not severe\", but the cavity shrinks by only about a quarter. EF just under 30% is severely reduced.",
+    "lookFor": "Watch the left ventricle (right side of the image). Compare the cavity size at its largest (end-diastole) with its smallest (end-systole), and watch whether the walls thicken as they move inward.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.26,
+      "effusion": 0,
+      "hr": 86,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "severe",
+        "confidence": 0.91,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "reduced",
+        "confidence": 0.77,
+        "errorType": "wrong-grade"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-1a",
+    "pairId": "PE-1",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "present",
+    "difficulty": 1,
+    "rationale": "A wide black band surrounds the heart between the muscle and the bright pericardium. That is a large pericardial effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.6,
+      "effusion": 0.9,
+      "hr": 104,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "present",
+        "confidence": 0.93,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "absent",
+        "confidence": 0.64,
+        "errorType": "missed-finding"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-1b",
+    "pairId": "PE-1",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "present",
+    "difficulty": 1,
+    "rationale": "A wide black band surrounds the heart between the muscle and the bright pericardium. That is a large pericardial effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.62,
+      "effusion": 0.82,
+      "hr": 98,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "present",
+        "confidence": 0.89,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "absent",
+        "confidence": 0.64,
+        "errorType": "missed-finding"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-2a",
+    "pairId": "PE-2",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "present",
+    "difficulty": 2,
+    "rationale": "A clear echo-free band runs around the ventricles and stays visible through the whole cycle. That is a moderate effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.58,
+      "effusion": 0.5,
+      "hr": 92,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "present",
+        "confidence": 0.89,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "absent",
+        "confidence": 0.72,
+        "errorType": "missed-finding"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-2b",
+    "pairId": "PE-2",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "present",
+    "difficulty": 2,
+    "rationale": "A clear echo-free band runs around the ventricles and stays visible through the whole cycle. That is a moderate effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.55,
+      "effusion": 0.55,
+      "hr": 96,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "present",
+        "confidence": 0.9,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "absent",
+        "confidence": 0.72,
+        "errorType": "missed-finding"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-3a",
+    "pairId": "PE-3",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "present",
+    "difficulty": 3,
+    "rationale": "A thin black rim is visible around the heart, best seen at end-diastole. It is small, but it is black rather than grey, so it is fluid: a small effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.6,
+      "effusion": 0.22,
+      "hr": 76,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "present",
+        "confidence": 0.9,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "absent",
+        "confidence": 0.86,
+        "errorType": "missed-finding"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-3b",
+    "pairId": "PE-3",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "present",
+    "difficulty": 3,
+    "rationale": "A thin black rim is visible around the heart, best seen at end-diastole. It is small, but it is black rather than grey, so it is fluid: a small effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.57,
+      "effusion": 0.25,
+      "hr": 80,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "present",
+        "confidence": 0.91,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "absent",
+        "confidence": 0.86,
+        "errorType": "missed-finding"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-4a",
+    "pairId": "PE-4",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "absent",
+    "difficulty": 1,
+    "rationale": "The bright pericardium sits directly against the heart muscle with no black gap. No effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.62,
+      "effusion": 0,
+      "hr": 70,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "absent",
+        "confidence": 0.91,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "present",
+        "confidence": 0.62,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-4b",
+    "pairId": "PE-4",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "absent",
+    "difficulty": 1,
+    "rationale": "The bright pericardium sits directly against the heart muscle with no black gap. No effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.6,
+      "effusion": 0,
+      "hr": 66,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "absent",
+        "confidence": 0.88,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "present",
+        "confidence": 0.62,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-5a",
+    "pairId": "PE-5",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "absent",
+    "difficulty": 2,
+    "rationale": "The ventricle contracts poorly, which can distract the eye, but there is no echo-free space around the heart. No effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.35,
+      "effusion": 0,
+      "hr": 88,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "absent",
+        "confidence": 0.88,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "present",
+        "confidence": 0.7,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-5b",
+    "pairId": "PE-5",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "absent",
+    "difficulty": 2,
+    "rationale": "The ventricle contracts poorly, which can distract the eye, but there is no echo-free space around the heart. No effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.33,
+      "effusion": 0,
+      "hr": 84,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "absent",
+        "confidence": 0.86,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "present",
+        "confidence": 0.7,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-6a",
+    "pairId": "PE-6",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "absent",
+    "difficulty": 3,
+    "rationale": "There is a band in front of the heart, but it is grey and speckled like tissue, not black. That is an epicardial fat pad, a common mimic. No effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.6,
+      "effusion": 0,
+      "mimic": true,
+      "hr": 74,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "absent",
+        "confidence": 0.86,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "present",
+        "confidence": 0.84,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  },
+  {
+    "id": "PE-6b",
+    "pairId": "PE-6",
+    "domain": "effusion",
+    "question": "Is a pericardial effusion present?",
+    "options": [
+      {
+        "value": "present",
+        "label": "Effusion present"
+      },
+      {
+        "value": "absent",
+        "label": "No effusion"
+      }
+    ],
+    "answer": "absent",
+    "difficulty": 3,
+    "rationale": "There is a band in front of the heart, but it is grey and speckled like tissue, not black. That is an epicardial fat pad, a common mimic. No effusion.",
+    "lookFor": "Look for a black (echo-free) band between the heart muscle and the bright pericardial line. Fat in front of the heart looks grey and textured, not black.",
+    "clip": {
+      "kind": "synthetic",
+      "ef": 0.58,
+      "effusion": 0,
+      "mimic": true,
+      "hr": 78,
+      "view": "A4C"
+    },
+    "ai": {
+      "correct": {
+        "answer": "absent",
+        "confidence": 0.93,
+        "errorType": "none"
+      },
+      "wrong": {
+        "answer": "present",
+        "confidence": 0.84,
+        "errorType": "over-call"
+      }
+    },
+    "status": "draft"
+  }
+]
