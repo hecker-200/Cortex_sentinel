@@ -10,7 +10,29 @@ export function Cases({ role }: { role: Role }) {
   const [filter, setFilter] = useState<'all' | Domain | 'draft'>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editing, setEditing] = useState<AdminCase | 'new' | null>(null);
+  const [packMsg, setPackMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [importing, setImporting] = useState(false);
   const isAdmin = role === 'admin';
+
+  const importPack = async (file: File) => {
+    setImporting(true);
+    setPackMsg(null);
+    try {
+      const r = await api<{ name: string; imported: number; created: number; updated: number; retired: number }>('/api/admin/case-pack', {
+        raw: file,
+        contentType: 'application/zip',
+      });
+      setPackMsg({
+        ok: true,
+        text: `Imported ${r.name}: ${r.created} new, ${r.updated} updated${r.retired ? `, ${r.retired} placeholder cases taken out of practice` : ''}. All imported cases start as Draft.`,
+      });
+      await list.reload();
+    } catch (e) {
+      setPackMsg({ ok: false, text: (e as Error).message });
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const cases = list.data ?? [];
   const shown = cases.filter((c) => filter === 'all' || c.domain === filter || (filter === 'draft' && c.status === 'draft'));
@@ -56,12 +78,32 @@ export function Cases({ role }: { role: Role }) {
             ))}
           </div>
           {isAdmin && (
-            <button type="button" className="btn btn--primary" onClick={() => setEditing('new')}>
-              New case
-            </button>
+            <>
+              <label className={`btn file-btn${importing ? ' is-busy' : ''}`}>
+                {importing ? 'Importing…' : 'Import case pack'}
+                <input
+                  type="file"
+                  accept=".zip,application/zip"
+                  disabled={importing}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) void importPack(f);
+                    e.target.value = '';
+                  }}
+                />
+              </label>
+              <button type="button" className="btn btn--primary" onClick={() => setEditing('new')}>
+                New case
+              </button>
+            </>
           )}
         </div>
       </header>
+      {packMsg && (
+        <p className={packMsg.ok ? 'callout callout--tip' : 'form-error'} role="status">
+          {packMsg.text}
+        </p>
+      )}
       {list.error && <p className="form-error">{list.error}</p>}
 
       <div className="bank">

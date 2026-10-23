@@ -4,3 +4,7 @@ dist-server/
 .data/
 .env
 *.log
+
+# Case packs can contain licensed clips: never commit them
+*.zip
+packs/

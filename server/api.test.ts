@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { strToU8, zipSync } from 'fflate';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from './app';
@@ -249,6 +250,49 @@ describe('admin case management', () => {
     const relog = await request(app).post('/api/auth/login').set(H).send({ email: 'trainee1@example.com', password: tmp.body.tempPassword });
     expect(relog.status).toBe(200);
     await request.agent(app).post('/api/auth/login').set(H).send({ email: 'trainee1@example.com', password: tmp.body.tempPassword });
+  });
+
+  it('imports a case pack, retires placeholder cases, and rejects bad packs', async () => {
+    const admin = request.agent(app);
+    await admin.post('/api/auth/login').set(H).send({ email: 'admin@example.com', password: 'correct horse' });
+    const opts = [
+      { value: 'normal', label: 'Normal' },
+      { value: 'reduced', label: 'Reduced' },
+      { value: 'severe', label: 'Severe' },
+    ];
+    const mk = (id: string) => ({
+      id, pairId: 'PK-1', domain: 'lv', question: 'How is LV function on this clip?', options: opts, answer: 'reduced', difficulty: 2,
+      rationale: 'Measured EF 40 percent.', lookFor: 'Watch the left ventricle.', viewLabel: 'A4C', active: true,
+      aiCorrect: { answer: 'reduced', confidence: 0.9, errorType: 'none' }, aiWrong: { answer: 'normal', confidence: 0.8, errorType: 'wrong-grade' },
+      clipSource: 'test pack',
+    });
+    const pack = { name: 'Test pack', retireSyntheticDomains: ['lv'], cases: [mk('PK-1a'), mk('PK-1b')] };
+    const clip = new Uint8Array(4000).fill(7);
+    const zip = (p: unknown, clips: Record<string, Uint8Array>) =>
+      Buffer.from(zipSync({ 'pack/pack.json': strToU8(JSON.stringify(p)), ...Object.fromEntries(Object.entries(clips).map(([k, v]) => [`pack/clips/${k}`, v])) }));
+
+    const missingClip = await admin.post('/api/admin/case-pack').set(H).set('Content-Type', 'application/zip').send(zip(pack, { 'PK-1a.mp4': clip }));
+    expect(missingClip.status).toBe(400);
+    expect(missingClip.body.error).toMatch(/PK-1b/);
+
+    const badPair = { ...pack, cases: [mk('PK-1a'), { ...mk('PK-1b'), difficulty: 3 }] };
+    expect((await admin.post('/api/admin/case-pack').set(H).set('Content-Type', 'application/zip').send(zip(badPair, { 'PK-1a.mp4': clip, 'PK-1b.mp4': clip }))).status).toBe(400);
+
+    const ok = await admin.post('/api/admin/case-pack').set(H).set('Content-Type', 'application/zip').send(zip(pack, { 'PK-1a.mp4': clip, 'PK-1b.mp4': clip }));
+    expect(ok.status, JSON.stringify(ok.body)).toBe(200);
+    expect(ok.body).toMatchObject({ imported: 2, created: 2, updated: 0 });
+    expect(ok.body.retired).toBeGreaterThanOrEqual(11);
+
+    const again = await admin.post('/api/admin/case-pack').set(H).set('Content-Type', 'application/zip').send(zip(pack, { 'PK-1a.mp4': clip, 'PK-1b.mp4': clip }));
+    expect(again.body).toMatchObject({ created: 0, updated: 2 });
+
+    const cases = (await admin.get('/api/admin/cases')).body as { id: string; domain: string; active: boolean; hasClip: boolean }[];
+    const liveLv = cases.filter((c) => c.domain === 'lv' && c.active && c.hasClip).map((c) => c.id).sort();
+    expect(liveLv).toEqual(['PK-1a', 'PK-1b']);
+
+    const t = request.agent(app);
+    await t.post('/api/auth/login').set(H).send({ email: 'runner@example.com', password: 'correct horse' });
+    expect((await t.post('/api/admin/case-pack').set(H).set('Content-Type', 'application/zip').send(zip(pack, {}))).status).toBe(403);
   });
 
   it('blocks trainees from admin routes', async () => {

@@ -209,6 +209,7 @@ const ACTION_LABEL: Record<string, string> = {
   'case.clip': 'Clip uploaded',
   'case.signoff': 'Case signed off',
   'case.reopen': 'Case reopened',
+  'case.pack': 'Case pack imported',
 };
 
 function Activity() {

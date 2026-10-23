@@ -115,7 +115,7 @@ export default function App() {
         </div>
       </header>
       <div className="notice">
-        <div className="notice-inner">Simulation for training · synthetic placeholder clips · not for clinical use</div>
+        <div className="notice-inner">Simulation for training · educational clips · not for clinical use</div>
       </div>
       {notice && (
         <div className="toast" role="status">

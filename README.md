@@ -133,6 +133,26 @@ and time. Any later edit or new clip sends it back to Draft.
 | R5 `VERIFIED_INDEPENDENCE` | Error-catch ≥ 80% and independent accuracy ≥ 80% (n ≥ 10), and not routinely rejecting a correct AI | AI-first cases, unaided check every 5th case |
 | R6 `DEFAULT_SCHEDULE` | Otherwise | Human-first, with every 3rd case a matched-pair case (AI-first or unaided, counterbalanced) |
 
+## Importing a case pack (bulk real clips)
+
+Admins can load many cases at once from **Case bank → Import case pack**. A pack is a
+`.zip` with a `pack.json` and one clip per case:
+
+```
+pack.json            { name, source, retireSyntheticDomains: ["lv"], cases: [ {id, pairId, domain, question,
+                       options, answer, difficulty, rationale, lookFor, viewLabel, active, aiCorrect, aiWrong, clipSource} ] }
+clips/<case id>.mp4
+```
+
+The whole pack is checked before anything is written: every case needs a valid answer, a
+wrong AI read that differs from it, and a clip, and both cases in a pair must share domain,
+answer and difficulty. Re-importing the same IDs updates them. Every imported case starts as
+**Draft**. `retireSyntheticDomains` takes the generated placeholder cases in those domains out
+of practice.
+
+**Never commit a pack to this repository.** Datasets such as EchoNet-Dynamic are licensed for
+research use only and must not be redistributed. `.gitignore` excludes `*.zip` and `packs/`.
+
 ## Replacing the placeholder clips with real echoes
 
 1. Get the data legitimately, for example EchoNet-Dynamic (Stanford AIMI, research-use

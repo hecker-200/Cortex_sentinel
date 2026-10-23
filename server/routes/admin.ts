@@ -1,9 +1,9 @@
-import { randomUUID } from 'node:crypto';
 import express, { Router } from 'express';
 import { z } from 'zod';
 import { DOMAINS } from '../../src/engine/config';
 import { PERSONAS, runPersonaChecks, simulateTrainee } from '../../src/engine/simulate';
-import { randomBytes } from 'node:crypto';
+import { randomBytes, randomUUID } from 'node:crypto';
+import { strFromU8, unzipSync } from 'fflate';
 import { hashPassword, requireRole } from '../auth';
 import type { Db } from '../db';
 import { bad, h, notFound, sendMedia, toBuffer } from '../http';
@@ -40,6 +40,15 @@ const CaseBody = z
       ctx.addIssue({ code: 'custom', path: ['aiWrong', 'answer'], message: 'must be a different option from the reference answer' });
     if (c.aiWrong.errorType === 'none') ctx.addIssue({ code: 'custom', path: ['aiWrong', 'errorType'], message: 'pick the error type' });
   });
+
+const PackCase = z.object({ id: z.string().trim().regex(/^[A-Za-z0-9_-]{2,40}$/), clipSource: z.string().max(300).optional() });
+const Pack = z.object({
+  name: z.string().min(1).max(200),
+  source: z.string().max(1000).optional(),
+  /** Deactivate synthetic placeholder cases in these domains after import */
+  retireSyntheticDomains: z.array(z.enum(DOMAINS)).default([]),
+  cases: z.array(z.record(z.unknown())).min(1).max(2000),
+});
 
 export function adminRoutes(db: Db) {
   const r = Router();
@@ -130,6 +139,91 @@ export function adminRoutes(db: Db) {
       );
       await audit(db, req.user!.id, 'case.clip', { caseId: prev.id, bytes: req.body.length, mime });
       res.json(await loadCase(db, prev.id));
+    }),
+  );
+
+  // Bulk import: a zip holding pack.json and clips/<case id>.mp4 for every case.
+  r.post(
+    '/case-pack',
+    admin,
+    express.raw({ type: ['application/zip', 'application/x-zip-compressed', 'application/octet-stream'], limit: '200mb' }),
+    h(async (req, res) => {
+      if (!Buffer.isBuffer(req.body) || req.body.length < 100) throw bad('Upload a case pack .zip file');
+      let files: Record<string, Uint8Array>;
+      try {
+        files = unzipSync(new Uint8Array(req.body.buffer, req.body.byteOffset, req.body.byteLength), {
+          filter: (f) => !f.name.includes('__MACOSX') && (f.name.endsWith('pack.json') || /\.(mp4|webm)$/i.test(f.name)),
+        });
+      } catch {
+        throw bad('That file is not a valid zip');
+      }
+      const key = Object.keys(files).find((k) => k.endsWith('pack.json'));
+      if (!key) throw bad('pack.json was not found in the zip');
+      const base = key.slice(0, -'pack.json'.length);
+      let raw: unknown;
+      try {
+        raw = JSON.parse(strFromU8(files[key]));
+      } catch {
+        throw bad('pack.json is not valid JSON');
+      }
+      const pack = Pack.parse(raw);
+
+      // Validate every case and its clip before writing anything
+      const items = pack.cases.map((c, i) => {
+        const meta = PackCase.safeParse(c);
+        if (!meta.success) throw bad(`Case ${i + 1}: id is missing or invalid`);
+        const body = CaseBody.safeParse(c);
+        if (!body.success) {
+          const iss = body.error.issues[0];
+          throw bad(`Case ${meta.data.id}: ${iss.path.join('.')} ${iss.message}`);
+        }
+        const mp4 = files[`${base}clips/${meta.data.id}.mp4`];
+        const webm = files[`${base}clips/${meta.data.id}.webm`];
+        const clip = mp4 ?? webm;
+        if (!clip || clip.length < 1000) throw bad(`Case ${meta.data.id}: clips/${meta.data.id}.mp4 is missing`);
+        return { id: meta.data.id, c: body.data, clip: Buffer.from(clip), mime: mp4 ? 'video/mp4' : 'video/webm', source: meta.data.clipSource ?? pack.name };
+      });
+      const ids = items.map((x) => x.id);
+      if (new Set(ids).size !== ids.length) throw bad('pack.json lists the same case ID twice');
+      const byPair = new Map<string, typeof items>();
+      for (const x of items) byPair.set(x.c.pairId, [...(byPair.get(x.c.pairId) ?? []), x]);
+      for (const [pid, xs] of byPair) {
+        if (xs.length > 2) throw bad(`Pair ${pid} has more than two cases`);
+        if (xs.length === 2 && (xs[0].c.answer !== xs[1].c.answer || xs[0].c.difficulty !== xs[1].c.difficulty || xs[0].c.domain !== xs[1].c.domain))
+          throw bad(`Pair ${pid}: both cases need the same domain, answer and difficulty`);
+      }
+
+      const result = await db.tx(async (q) => {
+        const existing = await q.query(`SELECT id FROM cases WHERE id = ANY($1::text[])`, [ids]);
+        const had = new Set(existing.rows.map((r) => r.id as string));
+        for (const { id, c, clip, mime, source } of items) {
+          await q.query(
+            `INSERT INTO cases (id, pair_id, domain, question, options, answer, difficulty, rationale, look_for, ai_correct, ai_wrong,
+               view_label, active, status, clip_mime, clip_data, clip_source)
+             VALUES ($1,$2,$3,$4,$5::jsonb,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12,$13,'draft',$14,$15,$16)
+             ON CONFLICT (id) DO UPDATE SET pair_id=EXCLUDED.pair_id, domain=EXCLUDED.domain, question=EXCLUDED.question,
+               options=EXCLUDED.options, answer=EXCLUDED.answer, difficulty=EXCLUDED.difficulty, rationale=EXCLUDED.rationale,
+               look_for=EXCLUDED.look_for, ai_correct=EXCLUDED.ai_correct, ai_wrong=EXCLUDED.ai_wrong, view_label=EXCLUDED.view_label,
+               active=EXCLUDED.active, status='draft', reviewed_by=NULL, reviewed_at=NULL, clip_mime=EXCLUDED.clip_mime,
+               clip_data=EXCLUDED.clip_data, clip_source=EXCLUDED.clip_source, version=cases.version + 1, updated_at=now()`,
+            [id, c.pairId, c.domain, c.question, JSON.stringify(c.options), c.answer, c.difficulty, c.rationale, c.lookFor,
+              JSON.stringify(c.aiCorrect), JSON.stringify(c.aiWrong), c.viewLabel, c.active, mime, clip, source],
+          );
+        }
+        let retired = 0;
+        if (pack.retireSyntheticDomains.length) {
+          const r2 = await q.query(
+            `UPDATE cases SET active = false, updated_at = now()
+              WHERE active AND domain = ANY($1::text[]) AND clip_source LIKE 'synthetic%' AND NOT (id = ANY($2::text[])) RETURNING id`,
+            [pack.retireSyntheticDomains, ids],
+          );
+          retired = r2.rows.length;
+        }
+        const created = ids.filter((x) => !had.has(x)).length;
+        await audit(q, req.user!.id, 'case.pack', { name: pack.name, created, updated: ids.length - created, retired });
+        return { name: pack.name, imported: ids.length, created, updated: ids.length - created, retired };
+      });
+      res.json(result);
     }),
   );
 
