@@ -41,6 +41,7 @@ export function Cases({ role }: { role: Role }) {
     () => ({
       reviewed: cases.filter((c) => c.status === 'reviewed').length,
       live: cases.filter((c) => c.active && c.hasClip).length,
+      liveReviewed: cases.filter((c) => c.active && c.hasClip && c.status === 'reviewed').length,
       placeholders: cases.filter(isPlaceholder).length,
       livePlaceholders: cases.filter((c) => isPlaceholder(c) && c.active).length,
     }),
@@ -145,10 +146,10 @@ export function Cases({ role }: { role: Role }) {
       {cases.length > 0 && (
         <div className="review-progress" aria-label="Clinical review progress">
           <div className="review-progress-bar">
-            <span style={{ width: `${Math.round((counts.reviewed / Math.max(1, cases.filter((c) => c.hasClip).length)) * 100)}%` }} />
+            <span style={{ width: `${Math.round((counts.liveReviewed / Math.max(1, counts.live)) * 100)}%` }} />
           </div>
           <span className="muted">
-            {counts.reviewed} of {cases.filter((c) => c.hasClip).length} cases with clips signed off
+            {counts.liveReviewed} of {counts.live} live cases signed off
           </span>
         </div>
       )}
