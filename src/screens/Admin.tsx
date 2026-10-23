@@ -210,6 +210,8 @@ const ACTION_LABEL: Record<string, string> = {
   'case.signoff': 'Case signed off',
   'case.reopen': 'Case reopened',
   'case.pack': 'Case pack imported',
+  'case.placeholders': 'Placeholder cases switched',
+  'user.delete': 'Account deleted by its owner',
 };
 
 function Activity() {

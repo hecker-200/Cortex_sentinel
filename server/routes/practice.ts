@@ -6,11 +6,12 @@ import { aiOutputFor, makeAttempt } from '../../src/engine/attempt';
 import { DOMAINS } from '../../src/engine/config';
 import { computeMetrics } from '../../src/engine/metrics';
 import { decideNext } from '../../src/engine/policy';
-import { checkPassword, hashPassword, rateLimit, requireUser } from '../auth';
+import { COOKIE, checkPassword, destroySession, hashPassword, rateLimit, requireUser } from '../auth';
 import type { Config } from '../config';
 import type { Db, Queryable } from '../db';
 import { HttpError, bad, h, notFound, sendMedia, toBuffer } from '../http';
 import {
+  audit,
   insertAttempt,
   insertDecision,
   insertPair,
@@ -274,6 +275,60 @@ export function meRoutes(db: Db, cfg: Config) {
       const { rows } = await db.query(`SELECT password_hash FROM users WHERE id = $1`, [req.user!.id]);
       if (!rows[0]?.password_hash || !(await checkPassword(body.current, rows[0].password_hash))) throw bad('Your current password is incorrect');
       await db.query(`UPDATE users SET password_hash = $2 WHERE id = $1`, [req.user!.id, await hashPassword(body.next)]);
+      res.json({ ok: true });
+    }),
+  );
+
+  // Everything stored about the signed-in user, as a JSON download
+  r.get(
+    '/export',
+    h(async (req, res) => {
+      const id = req.user!.id;
+      const u = await db.query(`SELECT name, email, role, consent_version, consent_at, created_at FROM users WHERE id = $1`, [id]);
+      const cohorts = await db.query(
+        `SELECT c.name, m.joined_at FROM cohort_members m JOIN cohorts c ON c.id = m.cohort_id WHERE m.user_id = $1 ORDER BY m.joined_at`,
+        [id],
+      );
+      const decisions = await db.query(
+        `SELECT id, created_at, domain, mode, case_id, reason_code, explanation, state FROM decisions WHERE user_id = $1 ORDER BY created_at`,
+        [id],
+      );
+      const attempts = await loadAttempts(db, [id]);
+      res.setHeader('Content-Disposition', 'attachment; filename="cortex-my-data.json"');
+      res.json({
+        exportedAt: new Date().toISOString(),
+        account: u.rows[0],
+        cohorts: cohorts.rows,
+        // Open cases keep their case ID hidden, as in practice
+        decisions: decisions.rows.map((d) => ({ ...d, case_id: d.state === 'done' ? d.case_id : null })),
+        attempts,
+      });
+    }),
+  );
+
+  // Permanent self-service account deletion
+  r.post(
+    '/delete',
+    h(async (req, res) => {
+      rateLimit(`del:${req.user!.id}`, 10, 15 * 60_000);
+      const body = z.object({ password: z.string().min(1).max(200), confirm: z.literal('DELETE', { errorMap: () => ({ message: 'Type DELETE to confirm' }) }) }).parse(req.body);
+      const { rows } = await db.query(`SELECT password_hash, role FROM users WHERE id = $1`, [req.user!.id]);
+      if (!rows[0]?.password_hash || !(await checkPassword(body.password, rows[0].password_hash))) throw bad('Your password is incorrect');
+      if (rows[0].role === 'admin') {
+        const others = await db.query(`SELECT count(*)::int AS n FROM users WHERE role = 'admin' AND id <> $1 AND NOT is_simulated`, [req.user!.id]);
+        if (Number(others.rows[0].n) === 0) throw bad('You are the only admin. Make someone else an admin first.');
+      }
+      await destroySession(db, req);
+      await db.tx(async (q) => {
+        // Simulated demo trainees in cohorts this user owns go too
+        await q.query(
+          `DELETE FROM users WHERE is_simulated AND id IN (SELECT m.user_id FROM cohort_members m JOIN cohorts c ON c.id = m.cohort_id WHERE c.owner_id = $1)`,
+          [req.user!.id],
+        );
+        await q.query(`DELETE FROM users WHERE id = $1`, [req.user!.id]);
+        await audit(q, null, 'user.delete', { role: rows[0].role });
+      });
+      res.clearCookie(COOKIE, { path: '/' });
       res.json({ ok: true });
     }),
   );

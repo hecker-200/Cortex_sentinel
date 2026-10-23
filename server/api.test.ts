@@ -310,3 +310,47 @@ describe('admin case management', () => {
     for (const p of r.body) if (p.expected) expect(p.passed).toBe(true);
   });
 });
+
+describe('your data and placeholders', () => {
+  it('lets a user download their data and delete their account', async () => {
+    const { agent } = await signup('Leaver', 'leaver@example.com');
+    await agent.post('/api/me/consent').set(H).send({ version: cfg.consentVersion });
+    const nx = await agent.get('/api/practice/next');
+    await agent.post(`/api/practice/${nx.body.decisionId}/answer`).set(H).send({ answer: nx.body.case.options[0].value, confidence: 3 });
+    const ex = await agent.get('/api/me/export');
+    expect(ex.status).toBe(200);
+    expect(ex.headers['content-disposition']).toMatch(/attachment/);
+    expect(ex.body.account.email).toBe('leaver@example.com');
+    expect(ex.body.decisions.length).toBeGreaterThan(0);
+
+    expect((await agent.post('/api/me/delete').set(H).send({ password: 'wrong', confirm: 'DELETE' })).status).toBe(400);
+    expect((await agent.post('/api/me/delete').set(H).send({ password: 'correct horse', confirm: 'nope' })).status).toBe(400);
+    const del = await agent.post('/api/me/delete').set(H).send({ password: 'correct horse', confirm: 'DELETE' });
+    expect(del.status, JSON.stringify(del.body)).toBe(200);
+    expect((await agent.get('/api/auth/me')).status).toBe(401);
+    expect((await request(app).post('/api/auth/login').set(H).send({ email: 'leaver@example.com', password: 'correct horse' })).status).toBe(401);
+  });
+
+  it('stops the only admin from deleting themselves', async () => {
+    const admin = request.agent(app);
+    await admin.post('/api/auth/login').set(H).send({ email: 'admin@example.com', password: 'correct horse' });
+    const r = await admin.post('/api/me/delete').set(H).send({ password: 'correct horse', confirm: 'DELETE' });
+    expect(r.status).toBe(400);
+    expect(r.body.error).toMatch(/only admin/);
+  });
+
+  it('takes placeholder cases out of practice and puts them back (admin only)', async () => {
+    const admin = request.agent(app);
+    await admin.post('/api/auth/login').set(H).send({ email: 'admin@example.com', password: 'correct horse' });
+    const off = await admin.post('/api/admin/placeholders').set(H).send({ active: false });
+    expect(off.status).toBe(200);
+    expect(off.body.changed).toBeGreaterThan(0);
+    const cases = (await admin.get('/api/admin/cases')).body as { clipSource: string | null; active: boolean }[];
+    expect(cases.filter((c) => (c.clipSource ?? '').startsWith('synthetic') && c.active)).toHaveLength(0);
+    const on = await admin.post('/api/admin/placeholders').set(H).send({ active: true });
+    expect(on.body.changed).toBeGreaterThan(0);
+    const edu = request.agent(app);
+    await edu.post('/api/auth/login').set(H).send({ email: 'edu@example.com', password: 'correct horse' });
+    expect((await edu.post('/api/admin/placeholders').set(H).send({ active: false })).status).toBe(403);
+  });
+});

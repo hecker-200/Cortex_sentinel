@@ -62,7 +62,12 @@ gh repo create cortex --private --source=. --push   # or create the repo on gith
 4. Open the URL Render gives you and sign up with your `ADMIN_EMAIL`.
 
 Render's free web service sleeps after 15 minutes without traffic, so the first request
-after that takes about a minute. Use a paid instance ($7/month) for a pilot.
+after that takes about a minute. Two fixes:
+
+- **Free:** create a free monitor at uptimerobot.com (HTTP(s), URL `https://<your-app>.onrender.com/healthz`,
+  every 5 minutes). The pings keep it awake and you get an email if the site goes down. One always-on
+  service fits inside Render's 750 free hours a month.
+- **Paid:** a Starter instance ($7/month) never sleeps. Use this for a real pilot.
 
 **Other hosts.** Anything that runs Node 20+ works with the same two commands:
 build `npm ci --include=dev && npm run build`, start `npm start`, plus `DATABASE_URL`.
@@ -107,9 +112,20 @@ and password changes; strict Content-Security-Policy; role checks on every educa
 admin route; trainees can only reach their own cases and clips; an audit log of every
 case, cohort and role change.
 
-**Clinical review workflow.** Every case starts as Draft. An educator or admin signs it
-off in the Case bank, with an optional note, and the sign-off is stored with their name
-and time. Any later edit or new clip sends it back to Draft.
+**Clinical review workflow.** Every case starts as Draft. To bring in a clinician reviewer,
+give them the `EDUCATOR_SIGNUP_CODE` (or promote their account on the Admin page). In
+**Case bank → Needs review** they watch each clip, tick three checks (reference answer matches
+the clip, the wrong AI read is plausible, the rationale is accurate) and click **Sign off and
+next**, or write a note and click **Needs changes**. The sign-off is stored with their name and
+time, and a progress bar shows how much of the bank is signed off. Any later edit or new clip
+sends a case back to Draft.
+
+**Placeholder cases.** Cases whose clips were generated (not real echoes) are tagged
+Placeholder in the Case bank. An admin can take them all out of practice with one button,
+so trainees see real clips only, and put them back later.
+
+**Your data.** Every user can download all their data as JSON and permanently delete their
+account from **My profile**. The last admin cannot delete themselves.
 
 ### Project layout
 
@@ -166,7 +182,7 @@ research use only and must not be redistributed. `.gitignore` excludes `*.zip` a
 ## Tests
 
 ```bash
-npm test                                   # 29 tests: engine + API on the embedded database
+npm test                                   # 33 tests: engine + API on the embedded database
 TEST_DATABASE_URL=postgres://... npm test  # the API tests against a real Postgres (wipes its schema)
 ```
 
@@ -180,5 +196,4 @@ sign-off, password resets, concurrent requests, and the persona checks for every
 - **Clinical sign-off** of every case and every seeded wrong AI read.
 - **Backups**: Neon keeps point-in-time history; check the retention on your plan.
 - **Not built yet**: email verification and self-service password reset by email
-  (admins issue temporary passwords instead), account deletion by the user (an admin
-  can do it in the database), and SSO.
+  (admins issue temporary passwords instead), and SSO.

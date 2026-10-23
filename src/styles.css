@@ -1517,3 +1517,51 @@ select.input {
   min-width: 0;
   max-width: 100%;
 }
+
+/* Case bank: placeholder switch, review progress, sign-off checklist */
+.placeholder-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.review-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 0.86rem;
+}
+.review-progress-bar {
+  flex: 0 1 220px;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.review-progress-bar span {
+  display: block;
+  height: 100%;
+  background: var(--good);
+}
+.checklist {
+  border: 0;
+  padding: 0;
+  margin: 0 0 10px;
+  display: grid;
+  gap: 8px;
+}
+.checklist .check {
+  font-weight: 500;
+  align-items: flex-start;
+}
+.checklist .check input {
+  margin-top: 2px;
+  flex: none;
+}
+.danger-zone {
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}

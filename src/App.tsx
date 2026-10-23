@@ -132,7 +132,17 @@ export default function App() {
         {user && !needsConsent && (
           <>
             {current === 'practice' && <Practice onProfile={() => go('profile')} />}
-            {current === 'profile' && <Profile user={user} onPractice={() => go('practice')} />}
+            {current === 'profile' && (
+              <Profile
+                user={user}
+                onPractice={() => go('practice')}
+                onDeleted={() => {
+                  setUser(null);
+                  setNotice('Your account and all its data were deleted.');
+                  go('practice');
+                }}
+              />
+            )}
             {current === 'cohorts' && <Cohorts />}
             {current === 'cases' && <Cases role={user.role} />}
             {current === 'admin' && <Admin me={user} />}

@@ -227,6 +227,21 @@ export function adminRoutes(db: Db) {
     }),
   );
 
+  // Take every case that still uses a generated placeholder clip out of practice (or put them back)
+  r.post(
+    '/placeholders',
+    admin,
+    h(async (req, res) => {
+      const { active } = z.object({ active: z.boolean() }).parse(req.body);
+      const { rows } = await db.query(
+        `UPDATE cases SET active = $1, updated_at = now() WHERE clip_source LIKE 'synthetic%' AND active <> $1 RETURNING id`,
+        [active],
+      );
+      await audit(db, req.user!.id, 'case.placeholders', { active, changed: rows.length });
+      res.json({ changed: rows.length });
+    }),
+  );
+
   r.post(
     '/cases/:id/review',
     staff,

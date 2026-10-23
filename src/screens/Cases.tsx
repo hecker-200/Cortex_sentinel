@@ -38,9 +38,34 @@ export function Cases({ role }: { role: Role }) {
   const shown = cases.filter((c) => filter === 'all' || c.domain === filter || (filter === 'draft' && c.status === 'draft'));
   const selected = cases.find((c) => c.id === selectedId) ?? shown[0] ?? null;
   const counts = useMemo(
-    () => ({ reviewed: cases.filter((c) => c.status === 'reviewed').length, live: cases.filter((c) => c.active && c.hasClip).length }),
+    () => ({
+      reviewed: cases.filter((c) => c.status === 'reviewed').length,
+      live: cases.filter((c) => c.active && c.hasClip).length,
+      placeholders: cases.filter(isPlaceholder).length,
+      livePlaceholders: cases.filter((c) => isPlaceholder(c) && c.active).length,
+    }),
     [cases],
   );
+  const [phBusy, setPhBusy] = useState(false);
+  const setPlaceholders = async (active: boolean) => {
+    setPhBusy(true);
+    setPackMsg(null);
+    try {
+      const r = await api<{ changed: number }>('/api/admin/placeholders', { body: { active } });
+      setPackMsg({ ok: true, text: active ? `${r.changed} placeholder cases put back into practice.` : `${r.changed} placeholder cases taken out of practice. Trainees now see real clips only.` });
+      await list.reload();
+    } catch (e) {
+      setPackMsg({ ok: false, text: (e as Error).message });
+    } finally {
+      setPhBusy(false);
+    }
+  };
+  // After a sign-off, move on to the next case that still needs review
+  const nextDraft = (fromId: string) => {
+    const queue = shown.filter((c) => c.status === 'draft' && c.hasClip && c.id !== fromId);
+    const after = queue.find((c) => shown.indexOf(c) > shown.findIndex((x) => x.id === fromId)) ?? queue[0];
+    if (after) setSelectedId(after.id);
+  };
 
   const replace = (c: AdminCase) => list.setData((prev) => (prev ? (prev.some((x) => x.id === c.id) ? prev.map((x) => (x.id === c.id ? c : x)) : [...prev, c]) : [c]));
 
@@ -105,6 +130,28 @@ export function Cases({ role }: { role: Role }) {
         </p>
       )}
       {list.error && <p className="form-error">{list.error}</p>}
+      {isAdmin && counts.placeholders > 0 && (
+        <div className={`callout ${counts.livePlaceholders ? 'callout--warn' : 'callout--tip'} placeholder-bar`}>
+          <span>
+            {counts.livePlaceholders
+              ? `${counts.livePlaceholders} cases still use generated placeholder clips and are live in practice.`
+              : `${counts.placeholders} placeholder cases are out of practice. Trainees see real clips only.`}
+          </span>
+          <button type="button" className="btn btn--sm" disabled={phBusy} onClick={() => setPlaceholders(counts.livePlaceholders === 0)}>
+            {counts.livePlaceholders ? 'Take placeholders out of practice' : 'Put placeholders back'}
+          </button>
+        </div>
+      )}
+      {cases.length > 0 && (
+        <div className="review-progress" aria-label="Clinical review progress">
+          <div className="review-progress-bar">
+            <span style={{ width: `${Math.round((counts.reviewed / Math.max(1, cases.filter((c) => c.hasClip).length)) * 100)}%` }} />
+          </div>
+          <span className="muted">
+            {counts.reviewed} of {cases.filter((c) => c.hasClip).length} cases with clips signed off
+          </span>
+        </div>
+      )}
 
       <div className="bank">
         <div className="table-wrap bank-list">
@@ -130,6 +177,7 @@ export function Cases({ role }: { role: Role }) {
                   <td className="nowrap">
                     <Pill tone={x.status === 'reviewed' ? 'good' : 'warn'}>{x.status === 'reviewed' ? 'Reviewed' : 'Draft'}</Pill>
                     {!x.active && <Pill>Off</Pill>}
+                    {isPlaceholder(x) && <Pill>Placeholder</Pill>}
                     {!x.hasClip && <Pill tone="crit">No clip</Pill>}
                   </td>
                 </tr>
@@ -137,22 +185,34 @@ export function Cases({ role }: { role: Role }) {
             </tbody>
           </table>
         </div>
-        {selected && <CaseDetail key={selected.id} c={selected} isAdmin={isAdmin} onChange={replace} onEdit={() => setEditing(selected)} />}
+        {selected && <CaseDetail key={selected.id} c={selected} isAdmin={isAdmin} onChange={replace} onEdit={() => setEditing(selected)} onNext={() => nextDraft(selected.id)} />}
       </div>
     </div>
   );
 }
 
-function CaseDetail({ c, isAdmin, onChange, onEdit }: { c: AdminCase; isAdmin: boolean; onChange: (c: AdminCase) => void; onEdit: () => void }) {
+const isPlaceholder = (c: AdminCase) => (c.clipSource ?? '').startsWith('synthetic');
+
+const CHECKS = [
+  'The reference answer matches what the clip shows',
+  'The wrong AI read is a mistake a real model could make',
+  'The rationale and "what to look for" are accurate',
+];
+
+function CaseDetail({ c, isAdmin, onChange, onEdit, onNext }: { c: AdminCase; isAdmin: boolean; onChange: (c: AdminCase) => void; onEdit: () => void; onNext: () => void }) {
   const [note, setNote] = useState(c.reviewNote ?? '');
+  const [checked, setChecked] = useState<boolean[]>(CHECKS.map(() => false));
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const allChecked = checked.every(Boolean);
 
-  const review = async (status: 'reviewed' | 'draft') => {
+  const review = async (status: 'reviewed' | 'draft', advance = false) => {
     setBusy(true);
     setMsg(null);
     try {
-      onChange(await api<AdminCase>(`/api/admin/cases/${encodeURIComponent(c.id)}/review`, { body: { status, note: note || undefined } }));
+      const fullNote = status === 'reviewed' ? [note.trim(), 'Checked: answer, wrong AI read, rationale.'].filter(Boolean).join(' ') : note.trim();
+      onChange(await api<AdminCase>(`/api/admin/cases/${encodeURIComponent(c.id)}/review`, { body: { status, note: fullNote || undefined } }));
+      if (advance) onNext();
     } catch (e) {
       setMsg((e as Error).message);
     } finally {
@@ -218,15 +278,31 @@ function CaseDetail({ c, isAdmin, onChange, onEdit }: { c: AdminCase; isAdmin: b
 
       <div className="review-box">
         <h3>Clinical review</h3>
+        {c.status === 'draft' && (
+          <fieldset className="checklist">
+            <legend className="field-help">Before signing off, confirm each point after watching the clip:</legend>
+            {CHECKS.map((label, i) => (
+              <label key={label} className="check">
+                <input type="checkbox" checked={checked[i]} onChange={(e) => setChecked(checked.map((v, j) => (j === i ? e.target.checked : v)))} />
+                <span>{label}</span>
+              </label>
+            ))}
+          </fieldset>
+        )}
         <label htmlFor={`note-${c.id}`} className="field-help">
-          Review note (optional, saved with the sign-off)
+          {c.status === 'draft' ? 'Note (optional). If something is wrong, describe it here and use Needs changes.' : 'Review note'}
         </label>
         <textarea id={`note-${c.id}`} className="input textarea" rows={2} value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} />
         <div className="btn-row">
           {c.status === 'draft' ? (
-            <button type="button" className="btn btn--primary" disabled={busy || !c.hasClip} onClick={() => review('reviewed')}>
-              Sign off this case
-            </button>
+            <>
+              <button type="button" className="btn btn--primary" disabled={busy || !c.hasClip || !allChecked} onClick={() => review('reviewed', true)}>
+                Sign off and next
+              </button>
+              <button type="button" className="btn" disabled={busy || !note.trim()} onClick={() => review('draft', true)} title="Saves your note and leaves the case in draft">
+                Needs changes
+              </button>
+            </>
           ) : (
             <button type="button" className="btn" disabled={busy} onClick={() => review('draft')}>
               Reopen for review

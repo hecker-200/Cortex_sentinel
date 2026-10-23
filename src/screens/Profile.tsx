@@ -5,7 +5,7 @@ import { DOMAIN_LABEL, DOMAINS } from '../engine/config';
 import { pct, signedPts, type DomainMetrics } from '../engine/metrics';
 import type { Domain, OutcomeClass } from '../types';
 
-export function Profile({ user, onPractice }: { user: User; onPractice: () => void }) {
+export function Profile({ user, onPractice, onDeleted }: { user: User; onPractice: () => void; onDeleted: () => void }) {
   const s = useApi<Summary>('/api/me/summary');
   const [code, setCode] = useState('');
   const [joinMsg, setJoinMsg] = useState<string | null>(null);
@@ -46,7 +46,7 @@ export function Profile({ user, onPractice }: { user: User; onPractice: () => vo
           <p>No cases yet. Your metrics appear here after your first case.</p>
         </div>
       )}
-      {s.data && s.data.total > 0 && DOMAINS.map((d) => <DomainSection key={d} domain={d} metrics={s.data!.metrics[d]} />)}
+      {s.data && s.data.total > 0 && DOMAINS.filter((d) => s.data!.metrics[d].total > 0).map((d) => <DomainSection key={d} domain={d} metrics={s.data!.metrics[d]} />)}
 
       {s.data && s.data.decisions.length > 0 && (
         <section className="section">
@@ -102,6 +102,7 @@ export function Profile({ user, onPractice }: { user: User; onPractice: () => vo
       </section>
 
       <PasswordForm email={user.email} />
+      <MyData onDeleted={onDeleted} />
     </div>
   );
 }
@@ -212,5 +213,68 @@ export function RelianceMatrix({ counts }: { counts: Partial<Record<OutcomeClass
         </div>
       ))}
     </div>
+  );
+}
+
+function MyData({ onDeleted }: { onDeleted: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const del = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setErr(null);
+    try {
+      await api('/api/me/delete', { body: { password, confirm } });
+      onDeleted();
+    } catch (x) {
+      setErr((x as Error).message);
+      setBusy(false);
+    }
+  };
+  return (
+    <section className="section">
+      <h2>Your data</h2>
+      <p className="page-sub">
+        Download everything CORTEX stores about you: your account, cohorts, every case you were given and why, and every answer.
+      </p>
+      <div className="btn-row">
+        <a className="btn" href="/api/me/export" download>
+          Download my data
+        </a>
+        {!open && (
+          <button type="button" className="btn btn--quiet" onClick={() => setOpen(true)}>
+            Delete my account
+          </button>
+        )}
+      </div>
+      {open && (
+        <form className="danger-zone form" onSubmit={del}>
+          <p>
+            <strong>This permanently deletes your account and all your answers.</strong> Cohorts you created are deleted too. It
+            cannot be undone. Download your data first if you want a copy.
+          </p>
+          <div className="inline-form">
+            <label htmlFor="del-pw" className="sr-only">
+              Password
+            </label>
+            <input id="del-pw" className="input" type="password" placeholder="Your password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <label htmlFor="del-confirm" className="sr-only">
+              Type DELETE to confirm
+            </label>
+            <input id="del-confirm" className="input" placeholder="Type DELETE" value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="off" />
+            <button type="submit" className="btn btn--danger" disabled={busy || !password || confirm !== 'DELETE'}>
+              {busy ? 'Deleting…' : 'Delete permanently'}
+            </button>
+            <button type="button" className="btn btn--quiet" onClick={() => setOpen(false)}>
+              Cancel
+            </button>
+          </div>
+          {err && <p className="form-error">{err}</p>}
+        </form>
+      )}
+    </section>
   );
 }
